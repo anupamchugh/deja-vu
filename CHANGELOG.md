@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.deja/memory.jsonl` for you to review and commit. Whoever clones the
   repository gets them at session start and in recall, in any agent, under a
   `repo` origin the trust policy can deny. Nothing is written or committed
-  unless you ask (#5636).
+  unless you ask (#5636, #5657).
 
 ### Fixed
 
