@@ -56,6 +56,7 @@ Run `deja` with no arguments in a terminal and it opens a full-screen search ove
 - [Auditing an agent](https://vshulcz.github.io/deja-vu/guide/auditing-agents.html): review agent changes when the diff cannot say what was tried
 - [Exporting a conversation](https://vshulcz.github.io/deja-vu/guide/export-conversations.html): markdown, JSON, or a shareable page
 - [Across machines](https://vshulcz.github.io/deja-vu/guide/sync-across-machines.html): sync between machines with no server
+- [Repo memory](https://vshulcz.github.io/deja-vu/guide/repo-memory.html): commit picked decisions and dropped approaches into .deja/memory.jsonl so a teammate's agent recalls them
 - [What memory costs](https://vshulcz.github.io/deja-vu/guide/token-cost.html): the measured token cost of recall
 - [Stats card to PNG](https://vshulcz.github.io/deja-vu/card/): turn the card `deja stats --card` writes into a PNG, in the browser
 

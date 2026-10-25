@@ -32,7 +32,7 @@
 <link rel="apple-touch-icon" href="../assets/icon.svg">
 <link rel="sitemap" type="application/xml" href="https://vshulcz.github.io/deja-vu/sitemap.xml">
 <link rel="describedby" type="text/markdown" href="https://vshulcz.github.io/deja-vu/llms.txt">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "CLI reference", "description": "Every deja subcommand: search, ctx, blame, fix, how, secrets, remember, forget, stats, last, sources, install, embed, sync, doctor, bench and update.", "url": "https://vshulcz.github.io/deja-vu/guide/commands.html", "inLanguage": "en", "author": {"@type": "Person", "name": "vshulcz"}, "publisher": {"@type": "Person", "name": "vshulcz"}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://vshulcz.github.io/deja-vu/guide/commands.html"}, "isPartOf": {"@type": "WebSite", "name": "deja-vu", "url": "https://vshulcz.github.io/deja-vu/"}, "datePublished": "2026-07-19", "dateModified": "2026-10-24"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "CLI reference", "description": "Every deja subcommand: search, ctx, blame, fix, how, secrets, remember, forget, stats, last, sources, install, embed, sync, doctor, bench and update.", "url": "https://vshulcz.github.io/deja-vu/guide/commands.html", "inLanguage": "en", "author": {"@type": "Person", "name": "vshulcz"}, "publisher": {"@type": "Person", "name": "vshulcz"}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://vshulcz.github.io/deja-vu/guide/commands.html"}, "isPartOf": {"@type": "WebSite", "name": "deja-vu", "url": "https://vshulcz.github.io/deja-vu/"}, "datePublished": "2026-07-19", "dateModified": "2026-10-25"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"deja-vu","item":"https://vshulcz.github.io/deja-vu/"},{"@type":"ListItem","position":2,"name":"CLI reference","item":"https://vshulcz.github.io/deja-vu/guide/commands.html"}]}</script>
 </head>
 <body>
@@ -60,7 +60,7 @@
 <a href="one-rules-file.html">One rules file</a>
 <a href="token-cost.html">What memory costs</a>
 </details>
-<details class="grpfold"><summary>Session history <span class="n">11</span></summary>
+<details class="grpfold"><summary>Session history <span class="n">12</span></summary>
 <a href="where-sessions-are-stored.html">Where history lives</a>
 <a href="find-a-session.html">Finding a session</a>
 <a href="codex-history.html">Codex history</a>
@@ -68,6 +68,7 @@
 <a href="codex-resume-session.html">Codex resume</a>
 <a href="export-conversations.html">Exporting sessions</a>
 <a href="sync-across-machines.html">Across machines</a>
+<a href="repo-memory.html">Repo memory</a>
 <a href="auditing-agents.html">Auditing an agent</a>
 <a href="credentials-in-transcripts.html">Credentials in transcripts</a>
 <a href="recover-a-deleted-session.html">Recover a deleted session</a>
@@ -198,6 +199,9 @@
 <tr><td><code>deja install &lt;target|--all|--auto&gt;</code></td><td>Wire MCP recall (and hooks) into your agents. <code>--all</code> wires MCP recall into every agent found on this machine; <code>--auto</code> adds the hooks and plugins each one takes. <code>--no-guidance</code> skips the instruction block, <code>--no-index</code> skips the first index build, <code>--force</code> replaces a deja skill file you have edited since deja wrote it. <code>deja help install</code> lists the targets.</td></tr>
 <tr><td><code>deja rules [sync]</code></td><td>Your standing rules in one file, <code>~/.config/deja/rules.md</code>. <code>deja rules</code> lists each installed agent's global rules file and whether its copy is in sync; <code>sync</code> writes the rules there as a marked block, leaving the rest of the file alone, and an empty file takes the copies back out. Agents whose global rules file deja has not verified are listed and left alone.</td></tr>
 <tr><td><code>deja rules candidates [--json] [--limit n] [--since 90d]</code></td><td>The turns where you corrected an agent, across every tool on the machine, each numbered with the session it came from — every one by default, the newest <code>n</code> with <code>--limit</code>. deja does not group them: the same rule comes back in different words each time. Ask your agent to suggest your rules and its skill runs this, groups the list, and shows the rules with the turns behind them; nothing goes into <code>rules.md</code> until you pick. Writes nothing.</td></tr>
+<tr><td><code>deja repo [--json]</code></td><td>The entries in this repository's <code>.deja/memory.jsonl</code>: decisions, approaches that were tried and dropped, and traps, committed so everyone who clones the repository gets them in recall and at session start. Says when your policy keeps them off a path. See <a href="repo-memory.html">Project memory in the repository</a>.</td></tr>
+<tr><td><code>deja repo candidates [--json] [--limit n] [--since 90d]</code></td><td>Proposed entries for this project from your history: promoted and remembered notes, reversals you or an agent reported in a session, and what sessions settled. Each line carries the id <code>repo add</code> takes. The newest 30 by default. Writes nothing.</td></tr>
+<tr><td><code>deja repo add &lt;id&gt;...</code>, <code>deja repo add --kind decision|rejected|gotcha "text"</code></td><td>Writes the candidates you picked, or one entry in your own words, into <code>.deja/memory.jsonl</code> after the same redaction <code>share</code> uses, and refuses an entry that still matches a secret rule. Never stages or commits: review <code>git diff .deja/</code> and commit it. Deleting a line removes an entry.</td></tr>
 <tr><td><code>deja embed</code></td><td>Build the semantic vector sidecar from an embedding endpoint.</td></tr>
 <tr><td><code>deja sync export/import/ssh</code></td><td>Move redacted memory between machines. Bare <code>deja sync</code> exchanges with every machine deja knows; <code>sync ssh &lt;host&gt;</code> pushes, <code>--pull</code> pulls, <code>--both</code> does both, <code>--full</code> sends everything rather than what changed. <code>sync export</code> also takes <code>--include-imported</code> and <code>--peer name</code>.</td></tr>
 <tr><td><code>deja sync forget &lt;host&gt;</code></td><td>Drop a machine deja knows, so a bare <code>deja sync</code> stops trying it.</td></tr>

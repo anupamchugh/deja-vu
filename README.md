@@ -78,6 +78,7 @@ prints what is indexed and which command to run next.
 - **Says when the ground moved.** A hit reports *4 files this session touched have changed since*, and stays quiet when it cannot tell.
 - **Local and private.** No model and no server; embeddings only if you turn on [semantic recall](#semantic-recall-optional). Keys and tokens are stripped as the index is built ([privacy](#privacy)).
 - **Moves with you.** `deja sync ssh laptop` between machines, no cloud in between; `deja handoff --to codex` to continue in another agent.
+- **Travels with the repository.** `deja repo add` commits the decisions and dead ends you pick into `.deja/memory.jsonl`; a teammate's agent recalls them after a clone ([repo memory](#memory-in-the-repository)).
 - **One Go binary.** macOS, Linux and Windows, through Homebrew, Scoop, winget, npm or `go install`.
 
 ### Your own work, wrapped
@@ -167,6 +168,29 @@ Install also writes user-level guidance for the harnesses it detects: Claude Cod
 
 </details>
 
+## Memory in the repository
+
+Sync moves history between your own machines. To hand the people you work with the
+few things your agents learned the hard way, put them in the repository:
+
+```text
+$ deja repo candidates
+ca3be2e5da rejected Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.  (session s1, claude 2026-08-03)
+$ deja repo add ca3be2e5da
+added 1 entry to .deja/memory.jsonl
+nothing is committed: review with `git diff .deja/` and commit it like code
+```
+
+Candidates come from this project's history in every agent: promoted and remembered
+notes, reversals reported in a session, and what sessions settled. Nothing is written
+until you pick, every entry is redacted on the way in, and one that still matches a secret
+rule is refused. The file is JSON lines sorted by a content hash, with a
+`merge=union` attribute beside it, so parallel additions merge; deleting a line removes
+an entry. After a clone, the entries come back at session start and in recall, in any agent
+deja is wired into, marked as from the repository and framed as untrusted like the rest.
+`{"activations":{"auto":{"repo":false}}}` in the trust policy keeps them out of the hooks.
+[More](https://vshulcz.github.io/deja-vu/guide/repo-memory.html).
+
 ## Privacy
 
 Indexing and search are local. The network is used only by `deja update`, `deja sync ssh`,
@@ -237,6 +261,7 @@ as usual. `deja search <query>` skips the suggestion.
 | Command | What it does |
 | --- | --- |
 | `deja sync export/import/ssh` | Move memory between machines. Watermarked, append-only, idempotent. |
+| `deja repo candidates`, `deja repo add <id>` | Move memory between people: write the decisions and dropped approaches you pick into the repository's `.deja/memory.jsonl`, redacted, for review and commit. Whoever clones it gets them in recall. |
 | `deja view` | Your whole memory as one local HTML file. No server, and the file never leaves the machine. |
 | `deja stats` | Your agent work, wrapped. `--card` draws it in the terminal, `--card <file>.svg` writes one for a profile, `--html` a browsable timeline. |
 | `deja secrets [--scrub]` | Which sessions' source transcripts carry credentials, and what kind. Never prints a value. `--scrub` rewrites the ones it can, original kept beside the file. |
@@ -276,7 +301,7 @@ whether or not the tool is called.
 | `fix` | the failing output, verbatim | `limit?` | What this machine ran, or changed, after that same error before. |
 | `how` | the tool or target, e.g. `go test` | `project?`, `limit?` | The real invocation, from what agents ran here. |
 | `orient` | nothing — it asks about the project | `project?`, `limit?` | The commands past sessions ran here and the files they worked in. |
-| `remember` | one durable fact or decision | `project?`, `tags?` | Stores a durable decision for later recall. |
+| `remember` | one durable fact or decision | `project?`, `tags?` | Stores a durable decision for later recall. `project` `repo:` (or `repo:rejected`, `repo:gotcha`) writes it into this repository's `.deja/memory.jsonl` instead, uncommitted. |
 | `handoff` | a session id or harness name; empty for the newest session here | `harness?` | Another session's goal, standing instructions, latest conclusions, passed checks and where it stopped, to continue it. |
 
 </details>
@@ -689,7 +714,7 @@ Written for the situation rather than the feature:
 - [Why agents forget between sessions](https://vshulcz.github.io/deja-vu/guide/forgetting.html) · [Where each agent keeps its history](https://vshulcz.github.io/deja-vu/guide/where-sessions-are-stored.html)
 - [Recovering a deleted Claude Code session](https://vshulcz.github.io/deja-vu/guide/recover-a-deleted-session.html) · [Claude Code: No conversation found with session ID](https://vshulcz.github.io/deja-vu/guide/no-conversation-found-claude-code.html) · [Codex resume session](https://vshulcz.github.io/deja-vu/guide/codex-resume-session.html) · [Deleting old Claude Code sessions](https://vshulcz.github.io/deja-vu/guide/delete-old-claude-sessions.html)
 - [What each memory tool knows the day you install it](https://vshulcz.github.io/deja-vu/guide/day-zero.html) · [Memory plugins compared](https://vshulcz.github.io/deja-vu/guide/compare.html)
-- [What compaction drops](https://vshulcz.github.io/deja-vu/guide/after-compaction.html) · [Switching agents](https://vshulcz.github.io/deja-vu/guide/switching-agents.html) · [Auditing an agent](https://vshulcz.github.io/deja-vu/guide/auditing-agents.html) · [Exporting a conversation](https://vshulcz.github.io/deja-vu/guide/export-conversations.html) · [Across machines](https://vshulcz.github.io/deja-vu/guide/sync-across-machines.html) · [What memory costs](https://vshulcz.github.io/deja-vu/guide/token-cost.html)
+- [What compaction drops](https://vshulcz.github.io/deja-vu/guide/after-compaction.html) · [Switching agents](https://vshulcz.github.io/deja-vu/guide/switching-agents.html) · [Auditing an agent](https://vshulcz.github.io/deja-vu/guide/auditing-agents.html) · [Exporting a conversation](https://vshulcz.github.io/deja-vu/guide/export-conversations.html) · [Across machines](https://vshulcz.github.io/deja-vu/guide/sync-across-machines.html) · [Repo memory](https://vshulcz.github.io/deja-vu/guide/repo-memory.html) · [What memory costs](https://vshulcz.github.io/deja-vu/guide/token-cost.html)
 
 Per harness: [Claude Code](https://vshulcz.github.io/deja-vu/guide/memory-for-claude-code.html) · [Codex](https://vshulcz.github.io/deja-vu/guide/memory-for-codex.html) · [Cursor](https://vshulcz.github.io/deja-vu/guide/memory-for-cursor.html) · [Windsurf](https://vshulcz.github.io/deja-vu/guide/memory-for-windsurf.html) · [opencode](https://vshulcz.github.io/deja-vu/guide/memory-for-opencode.html) · [DeepSeek Harness](https://vshulcz.github.io/deja-vu/guide/memory-for-dsh.html) · [Kimi Code](https://vshulcz.github.io/deja-vu/guide/memory-for-kimi.html) · [Zed](https://vshulcz.github.io/deja-vu/guide/memory-for-zed.html) · [Grok Build](https://vshulcz.github.io/deja-vu/guide/memory-for-grok.html) · [Gemini CLI](https://vshulcz.github.io/deja-vu/guide/memory-for-gemini.html) · [Qwen Code](https://vshulcz.github.io/deja-vu/guide/memory-for-qwen.html) · [OpenClaw](https://vshulcz.github.io/deja-vu/guide/memory-for-openclaw.html) · [Goose](https://vshulcz.github.io/deja-vu/guide/memory-for-goose.html) · [Cline](https://vshulcz.github.io/deja-vu/guide/memory-for-cline.html) · [pi](https://vshulcz.github.io/deja-vu/guide/memory-for-pi.html) · [Hermes](https://vshulcz.github.io/deja-vu/guide/memory-for-hermes.html) · [Copilot CLI](https://vshulcz.github.io/deja-vu/guide/memory-for-copilot.html) · [Copilot Chat](https://vshulcz.github.io/deja-vu/guide/memory-for-copilot-chat.html) · [aider](https://vshulcz.github.io/deja-vu/guide/memory-for-aider.html) · [Amp](https://vshulcz.github.io/deja-vu/guide/memory-for-amp.html) · [Antigravity](https://vshulcz.github.io/deja-vu/guide/memory-for-antigravity.html) · [Continue](https://vshulcz.github.io/deja-vu/guide/memory-for-continue.html) · [Crush](https://vshulcz.github.io/deja-vu/guide/memory-for-crush.html) · [Roo Code](https://vshulcz.github.io/deja-vu/guide/memory-for-roo.html) · [Kilo Code](https://vshulcz.github.io/deja-vu/guide/memory-for-kilocode.html) · [Kiro](https://vshulcz.github.io/deja-vu/guide/memory-for-kiro.html) · [Cherry Studio](https://vshulcz.github.io/deja-vu/guide/memory-for-cherrystudio.html) · [Oh My Pi](https://vshulcz.github.io/deja-vu/guide/memory-for-omp.html) · [prime-agent](https://vshulcz.github.io/deja-vu/guide/memory-for-prime.html) · [Senpi](https://vshulcz.github.io/deja-vu/guide/memory-for-senpi.html) · [Kimchi](https://vshulcz.github.io/deja-vu/guide/memory-for-kimchi.html) · [Command Code](https://vshulcz.github.io/deja-vu/guide/memory-for-commandcode.html) · [ZCode](https://vshulcz.github.io/deja-vu/guide/memory-for-zcode.html) · [gjc](https://vshulcz.github.io/deja-vu/guide/memory-for-gjc.html) · [CodeWhale](https://vshulcz.github.io/deja-vu/guide/memory-for-codewhale.html) · [Reasonix](https://vshulcz.github.io/deja-vu/guide/memory-for-reasonix.html)
 

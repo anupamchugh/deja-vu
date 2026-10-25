@@ -183,10 +183,19 @@ it carries a window (`offset`, `limit`, `total`, `returned`) for the same reason
 `--limit N` bounds the ranked result set to 1–100 hits, on the tiers that serve
 that cap (see [`hits` is not a fixed
 window](#hits-is-not-a-fixed-window-across-tiers)). Every machine session has
-`source.origin`, either `local` or `imported`. When
+`source.origin`: `local`, `imported`, or `repo` for an entry read from a
+repository's committed `.deja/memory.jsonl` (its `project` is
+`repo:<name>`, its harness `deja`). When
 `DEJA_SOURCE_INSTANCE` is configured, local sessions also carry that stable
-operator-chosen `source.instance`; imported sessions omit it because current
-sync batches do not carry trustworthy peer identity.
+operator-chosen `source.instance`; imported and repo sessions omit it because
+neither comes with a trustworthy peer identity.
+
+`deja repo --json` prints the entries of the current repository's file, each
+`{"id","kind","text","date","from"}` with `from` omitted when unknown, and `[]`
+when there are none. `deja repo candidates --json` prints the proposed entries,
+each with `id`, `kind`, `text`, `from`, `source` (`promoted note`, `your note`
+or `session <id>`), `session` when it came from one, `in_file` when the
+repository already holds it and `refused` when redaction would not let it in.
 
 ### The session object
 

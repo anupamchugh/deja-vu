@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Project memory committed in the repository. `deja repo candidates` proposes
+  decisions, dropped approaches and gotchas for the current project from your
+  history, and `deja repo add` writes the ones you pick, redacted, into
+  `.deja/memory.jsonl` for you to review and commit. Whoever clones the
+  repository gets them at session start and in recall, in any agent, under a
+  `repo` origin the trust policy can deny. Nothing is written or committed
+  unless you ask (#5636).
+
 ### Fixed
 
 - A resumed Gemini CLI session no longer shows and indexes each tool result

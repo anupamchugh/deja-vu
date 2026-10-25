@@ -35,7 +35,7 @@
 <link rel="apple-touch-icon" href="../assets/icon.svg">
 <link rel="sitemap" type="application/xml" href="https://vshulcz.github.io/deja-vu/sitemap.xml">
 <link rel="describedby" type="text/markdown" href="https://vshulcz.github.io/deja-vu/llms.txt">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Privacy", "description": "deja is local by design: no network path in indexing or search unless semantic search is on, credentials redacted at index time, and forget/exclude controls.", "url": "https://vshulcz.github.io/deja-vu/guide/privacy.html", "inLanguage": "en", "author": {"@type": "Person", "name": "vshulcz"}, "publisher": {"@type": "Person", "name": "vshulcz"}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://vshulcz.github.io/deja-vu/guide/privacy.html"}, "isPartOf": {"@type": "WebSite", "name": "deja-vu", "url": "https://vshulcz.github.io/deja-vu/"}, "datePublished": "2026-07-19", "dateModified": "2026-10-22"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Privacy", "description": "deja is local by design: no network path in indexing or search unless semantic search is on, credentials redacted at index time, and forget/exclude controls.", "url": "https://vshulcz.github.io/deja-vu/guide/privacy.html", "inLanguage": "en", "author": {"@type": "Person", "name": "vshulcz"}, "publisher": {"@type": "Person", "name": "vshulcz"}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://vshulcz.github.io/deja-vu/guide/privacy.html"}, "isPartOf": {"@type": "WebSite", "name": "deja-vu", "url": "https://vshulcz.github.io/deja-vu/"}, "datePublished": "2026-07-19", "dateModified": "2026-10-25"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"deja-vu","item":"https://vshulcz.github.io/deja-vu/"},{"@type":"ListItem","position":2,"name":"Privacy","item":"https://vshulcz.github.io/deja-vu/guide/privacy.html"}]}</script>
 </head>
 <body>
@@ -63,7 +63,7 @@
 <a href="one-rules-file.html">One rules file</a>
 <a href="token-cost.html">What memory costs</a>
 </details>
-<details class="grpfold"><summary>Session history <span class="n">11</span></summary>
+<details class="grpfold"><summary>Session history <span class="n">12</span></summary>
 <a href="where-sessions-are-stored.html">Where history lives</a>
 <a href="find-a-session.html">Finding a session</a>
 <a href="codex-history.html">Codex history</a>
@@ -71,6 +71,7 @@
 <a href="codex-resume-session.html">Codex resume</a>
 <a href="export-conversations.html">Exporting sessions</a>
 <a href="sync-across-machines.html">Across machines</a>
+<a href="repo-memory.html">Repo memory</a>
 <a href="auditing-agents.html">Auditing an agent</a>
 <a href="credentials-in-transcripts.html">Credentials in transcripts</a>
 <a href="recover-a-deleted-session.html">Recover a deleted session</a>
@@ -167,7 +168,7 @@
 <li><b>Forget</b> — <code>deja forget</code> removes sessions and records a tombstone so they don't come back on the next index; <code>--dry-run</code> to preview, <code>--list</code> to see the tombstones, <code>--unforget &lt;id&gt;</code> to reverse one.</li>
 <li><b>Redaction report</b> — <code>deja stats --redaction</code> shows what was masked, per rule and harness.</li>
 <li><b>Audit what agents received</b> — <code>deja log</code> lists recent recalls and injections; <code>deja log --last</code> prints the exact digest most recently served.</li>
-<li><b>Trust scopes</b> — <code>~/.config/deja/policy.json</code> controls what memory activates where. Per activation path (<code>search</code>, <code>mcp</code>, <code>auto</code>) you allow or deny origins: <code>local</code>, <code>imported</code> (anything synced from another machine), or <code>imported:&lt;group&gt;</code> for synced sessions whose project, on the machine they came from, sits under that top directory. A rule cannot name a peer: each synced record does carry the sending machine's name, but that is the sender's own claim, which nothing verifies. Example — synced sessions stay searchable but never auto-inject: <code>{"activations":{"auto":{"imported":false}}}</code>. <code>DEJA_AUTORECALL_LOCAL_ONLY=1</code> remains an alias for exactly that rule. Receipts and <code>deja log --last</code> name the policy that allowed each injection. <code>deja embed</code> is the one command that sends session text off the machine, and no activation describes that, so it takes the agreement of all three: anything a rule withholds on any path is not embedded, and <code>deja embed</code> reports how many records stayed.</li>
+<li><b>Trust scopes</b> — <code>~/.config/deja/policy.json</code> controls what memory activates where. Per activation path (<code>search</code>, <code>mcp</code>, <code>auto</code>) you allow or deny origins: <code>local</code>, <code>imported</code> (anything synced from another machine), or <code>imported:&lt;group&gt;</code> for synced sessions whose project, on the machine they came from, sits under that top directory, and <code>repo</code> or <code>repo:&lt;project&gt;</code> for entries read from a repository's committed <a href="repo-memory.html"><code>.deja/memory.jsonl</code></a>. A rule cannot name a peer: each synced record does carry the sending machine's name, but that is the sender's own claim, which nothing verifies. Example — synced sessions stay searchable but never auto-inject: <code>{"activations":{"auto":{"imported":false}}}</code>. <code>DEJA_AUTORECALL_LOCAL_ONLY=1</code> remains an alias for exactly that rule. Receipts and <code>deja log --last</code> name the policy that allowed each injection. <code>deja embed</code> is the one command that sends session text off the machine, and no activation describes that, so it takes the agreement of all three: anything a rule withholds on any path is not embedded, and <code>deja embed</code> reports how many records stayed.</li>
 </ul>
 <p>Full details in the <a href="https://github.com/vshulcz/deja-vu/blob/main/docs/SECURITY-MODEL.md">security model</a>.</p>
 
