@@ -224,7 +224,8 @@ func projectMatches(project string, names []string) bool {
 	// session-start digest silently drops imported sessions the trust policy
 	// (default local+imported) already allowed — while hook-prompt keeps them, so
 	// the two auto-injections disagreed on the same store (#E-new33).
-	bare := strings.TrimPrefix(project, "imported:")
+	// Repo memory carries "repo:" in front of the checkout's name the same way.
+	bare := model.BareProject(project)
 	for _, name := range names {
 		name = lower(filepathClean(name))
 		if name == "" {

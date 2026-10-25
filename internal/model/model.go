@@ -111,6 +111,19 @@ type Session struct {
 	Agent  string `json:"agent,omitempty"`
 }
 
+// RepoProjectPrefix marks the project of an entry read from a repository's
+// committed .deja/memory.jsonl, the way "imported:" marks a synced session.
+const RepoProjectPrefix = "repo:"
+
+// BareProject is the project without the "imported:" or "repo:" mark: the
+// name the work has where it happened.
+func BareProject(project string) string {
+	if rest, ok := strings.CutPrefix(project, "imported:"); ok {
+		return rest
+	}
+	return strings.TrimPrefix(project, RepoProjectPrefix)
+}
+
 // Source identifies where a session entered this deja index. Instance is an
 // operator-configured stable name for the local store set; imported sessions
 // deliberately omit it until sync carries peer provenance of its own.
@@ -124,6 +137,10 @@ type Source struct {
 func (s *Session) SetSource(localInstance string) {
 	if strings.HasPrefix(s.Project, "imported:") {
 		s.Source = &Source{Origin: "imported"}
+		return
+	}
+	if strings.HasPrefix(s.Project, RepoProjectPrefix) {
+		s.Source = &Source{Origin: "repo"}
 		return
 	}
 	s.Source = &Source{Origin: "local", Instance: localInstance}

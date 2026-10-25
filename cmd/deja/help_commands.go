@@ -192,6 +192,15 @@ var helpEntries = []helpEntry{
 		desc:     "one rules file, copied into every agent's rules",
 		more:     "The file is ~/.config/deja/rules.md. sync writes it into each agent's global rules file as a marked block. candidates lists the turns where you corrected an agent, for your agent to group into rules.",
 		examples: []string{"deja rules", "deja rules sync", "deja rules candidates --since 180d"}},
+	{name: "repo", group: groupNotes,
+		usage: []string{
+			"deja repo [--json]",
+			"deja repo candidates [--json] [--limit n] [--since 90d]",
+			`deja repo add <id>... | deja repo add --kind decision|rejected|gotcha "text"`,
+		},
+		desc:     "project memory committed in the repository's .deja/",
+		more:     "Entries in .deja/memory.jsonl reach everyone who clones the repository, in recall and at session start. candidates proposes entries from this project's history and writes nothing. add writes the ones you pick, redacted, and never commits: review the diff and commit it. Deleting a line removes an entry.",
+		examples: []string{"deja repo candidates --since 90d", "deja repo add 9c41e0a2b7", `deja repo add --kind rejected "retry with jitter broke idempotency in the webhook sender"`}},
 
 	{name: "install", group: groupSetup,
 		usage:    []string{"deja install <target>... | --all | --auto [--no-guidance] [--no-index] [--force]"},

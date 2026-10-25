@@ -1275,7 +1275,7 @@ func cachedHookDigestFor(dir, fromPayload string, exclude ...string) (string, in
 	if !index.HasManifest(dir) || !index.IsCurrentVersion(dir) || index.Damaged(dir) {
 		requestWarmup(dir)
 	}
-	gate := hookGate()
+	gate := hookGate() + repoMemoryStamp(cwd)
 	p := hookCachePath(dir, cwd)
 	if b, err := os.ReadFile(p); err == nil {
 		var e hookCacheEntry
@@ -1318,7 +1318,7 @@ func writeHookCacheEntry(dir, cwd string, e hookCacheEntry) {
 	if e.Digest == "" {
 		return
 	}
-	e.At, e.CWD, e.Gate = time.Now(), cwd, hookGate()
+	e.At, e.CWD, e.Gate = time.Now(), cwd, hookGate()+repoMemoryStamp(cwd)
 	// Renamed into place: a hook reading while the refresh writes would
 	// otherwise see a torn entry and rebuild.
 	if b, err := json.Marshal(e); err == nil {
@@ -1482,6 +1482,11 @@ func hookDigestBuild(dir, fromPayload string, exclude []string, variants bool, c
 		}
 	}
 	conventions := projectConventions(allowedNames)
+	// The repository's committed entries sit with the standing decisions, and
+	// stay out of the session list below so one entry is not said twice.
+	if repo := repoMemoryBlock(cwd, pol); repo != "" {
+		conventions = joinBlocks(conventions, repo)
+	}
 	var ss []model.Session
 	seen := map[string]bool{}
 	lookupNames := names
@@ -1509,6 +1514,9 @@ func hookDigestBuild(dir, fromPayload string, exclude []string, variants bool, c
 	// down to it (#2040).
 	if got, err := index.RecentProjectsUnder(dir, lookupNames, cwd, perName); err == nil {
 		for _, s := range got {
+			if strings.HasPrefix(s.Project, model.RepoProjectPrefix) {
+				continue
+			}
 			if !pol.Allows(policy.ActivationAuto, s.Project) {
 				withheld++
 				continue

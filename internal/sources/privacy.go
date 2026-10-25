@@ -106,7 +106,8 @@ func (e Excluder) Match(project string) bool {
 	// Sync-imported sessions are stored as "imported:<project>"; a glob
 	// written for the local name must still match after the trip.
 	project = strings.ToLower(project)
-	bare := strings.TrimPrefix(project, "imported:")
+	// Repo memory of an excluded project is excluded with it.
+	bare := model.BareProject(project)
 	for _, pattern := range e.patterns {
 		// A `harness:` line names a store, not a project. Left in the pattern
 		// list it would exclude any project whose name contains the harness's —

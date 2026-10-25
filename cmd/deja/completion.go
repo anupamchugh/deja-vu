@@ -150,6 +150,19 @@ _deja_completion() {
         remember)
             COMPREPLY=( $(compgen -W "--project --tag" -- "$cur") )
             ;;
+        repo)
+            if (( COMP_CWORD == 2 )); then
+                COMPREPLY=( $(compgen -W "candidates add --json" -- "$cur") )
+            elif [[ "$action" == "candidates" && "$prev" != "--limit" && "$prev" != "--since" ]]; then
+                COMPREPLY=( $(compgen -W "--json --limit --since" -- "$cur") )
+            elif [[ "$action" == "add" && "$prev" == "--kind" ]]; then
+                COMPREPLY=( $(compgen -W "decision rejected gotcha" -- "$cur") )
+            elif [[ "$action" == "add" ]]; then
+                COMPREPLY=( $(compgen -W "--kind" -- "$cur") )
+            else
+                COMPREPLY=()
+            fi
+            ;;
         rules)
             if (( COMP_CWORD == 2 )); then
                 COMPREPLY=( $(compgen -W "sync status candidates" -- "$cur") )
@@ -299,6 +312,7 @@ _deja() {
     'doctor:diagnose local stores and wiring'
     'promote:distill a session into a curated note'
     'rules:copy your rules file into every agent, or list your corrections'
+    'repo:project memory committed in the repository'
     'embed:build the semantic sidecar'
     'forget:remove indexed sessions'
     'handoff:continue a session in another agent'
@@ -380,6 +394,15 @@ _deja() {
       ;;
     remember)
       _arguments '--project=[note project]:project:' '*--tag=[tag the note, repeatable]:tag:' '1:text:'
+      ;;
+    repo)
+      if (( CURRENT == 3 )); then
+        _values 'repo action' candidates add
+      elif [[ "$words[3]" == "candidates" ]]; then
+        _arguments '--json[print JSON]' '--limit=[maximum candidates]:count:' '--since=[filter by age]:duration:'
+      elif [[ "$words[3]" == "add" ]]; then
+        _arguments '--kind=[write your own entry]:kind:(decision rejected gotcha)'
+      fi
       ;;
     rules)
       if (( CURRENT == 3 )); then
@@ -528,6 +551,12 @@ complete -c deja -n '__fish_seen_subcommand_from recall; and not __fish_seen_sub
 complete -c deja -n '__fish_seen_subcommand_from recall; and not __fish_seen_subcommand_from bench' -l offset -r
 complete -c deja -n '__fish_seen_subcommand_from remember' -l project -r
 complete -c deja -n '__fish_seen_subcommand_from remember' -l tag -r
+complete -c deja -n '__fish_seen_subcommand_from repo; and not __fish_seen_subcommand_from candidates add' -f -a 'candidates add'
+complete -c deja -n '__fish_seen_subcommand_from repo; and not __fish_seen_subcommand_from candidates add' -l json
+complete -c deja -n '__fish_seen_subcommand_from repo; and __fish_seen_subcommand_from candidates' -l json
+complete -c deja -n '__fish_seen_subcommand_from repo; and __fish_seen_subcommand_from candidates' -l limit -r
+complete -c deja -n '__fish_seen_subcommand_from repo; and __fish_seen_subcommand_from candidates' -l since -r
+complete -c deja -n '__fish_seen_subcommand_from repo; and __fish_seen_subcommand_from add' -l kind -r -a 'decision rejected gotcha'
 complete -c deja -n '__fish_seen_subcommand_from rules; and not __fish_seen_subcommand_from sync status candidates' -f -a 'sync status candidates'
 complete -c deja -n '__fish_seen_subcommand_from rules; and __fish_seen_subcommand_from candidates' -l json
 complete -c deja -n '__fish_seen_subcommand_from rules; and __fish_seen_subcommand_from candidates' -l limit -r
@@ -648,6 +677,13 @@ Register-ArgumentCompleter -Native -CommandName deja -ScriptBlock {
                 else { @('--project', '--harness', '--limit', '--offset') }
             }
             'remember' { @('--project', '--tag') }
+            'repo' {
+                if ($argumentPosition -eq 1) { @('candidates', 'add', '--json') }
+                elseif ($action -eq 'candidates' -and $previous -notin @('--limit', '--since')) { @('--json', '--limit', '--since') }
+                elseif ($action -eq 'add' -and $previous -eq '--kind') { @('decision', 'rejected', 'gotcha') }
+                elseif ($action -eq 'add') { @('--kind') }
+                else { @() }
+            }
             'rules' {
                 if ($argumentPosition -eq 1) { @('sync', 'status', 'candidates') }
                 elseif ($action -eq 'candidates' -and $previous -notin @('--limit', '--since')) { @('--json', '--limit', '--since') }
@@ -732,7 +768,7 @@ func completionCommands() []string {
 	return []string{
 		"bench", "blame", "brief", "check", "completion", "ctx", "delete", "doctor", "embed",
 		"files", "fix", "forget", "friction", "handoff", "help", "how", "index",
-		"install", "last", "log", "mcp", "promote", "recall", "recap", "remember", "restore",
+		"install", "last", "log", "mcp", "promote", "recall", "recap", "remember", "repo", "restore",
 		"resume", "rules", "search", "secrets", "share", "show", "sources", "stats",
 		"statusline", "sync", "tests", "uninstall", "update", "version", "view",
 		"warmup", "wip",

@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/vshulcz/deja-vu/internal/model"
 	"github.com/vshulcz/deja-vu/internal/sources"
 )
 
@@ -31,7 +32,8 @@ const (
 // only as the sender calls itself, which nothing verifies, so this is a project
 // grouping and not a peer name — which is how it was described until a rule
 // written for a machine turned out to be accepted, displayed and never matched
-// (#955). Most specific wins.
+// (#955). "repo" is what a repository's committed .deja/memory.jsonl brings
+// in, and "repo:<project>" that one repository's. Most specific wins.
 type Policy struct {
 	Activations map[string]map[string]bool `json:"activations,omitempty"`
 	// Ignore lists the directories deja does not recall from: an agent
@@ -101,8 +103,15 @@ func Load() Policy {
 // Origin classifies a session's project name. Everything local is "local";
 // anything that arrived by sync is "imported", and additionally
 // "imported:<group>" when its source project had a path, so a group of another
-// machine's projects can be addressed on its own (#955).
+// machine's projects can be addressed on its own (#955). Repo memory is
+// "repo:<project>".
 func Origin(project string) string {
+	// An entry from a repository's committed .deja/memory.jsonl is "repo:"
+	// and the project, so one repository can be denied on its own and "repo"
+	// denies them all.
+	if strings.HasPrefix(project, model.RepoProjectPrefix) {
+		return project
+	}
 	if peer, ok := strings.CutPrefix(project, "imported:"); ok {
 		if i := strings.IndexByte(peer, '/'); i > 0 {
 			return "imported:" + peer[:i]
@@ -126,6 +135,11 @@ func (p Policy) Allows(activation, project string) bool {
 	}
 	if strings.HasPrefix(origin, "imported:") {
 		if v, ok := rules["imported"]; ok {
+			return v
+		}
+	}
+	if strings.HasPrefix(origin, model.RepoProjectPrefix) {
+		if v, ok := rules["repo"]; ok {
 			return v
 		}
 	}
@@ -155,7 +169,8 @@ func (p Policy) AllowsEgress(project string) bool {
 // consultedOrigin reports whether a rule key is one Origin can produce. Rules
 // are keyed by origin; a project name looks like a rule and is not one.
 func consultedOrigin(origin string) bool {
-	return origin == "local" || origin == "imported" || strings.HasPrefix(origin, "imported:")
+	return origin == "local" || origin == "imported" || strings.HasPrefix(origin, "imported:") ||
+		origin == "repo" || strings.HasPrefix(origin, model.RepoProjectPrefix)
 }
 
 // Describe names the active rule set for receipts and `deja log`, so the
@@ -269,7 +284,7 @@ func Diagnose() (exists bool, unknown []string, err error) {
 			continue
 		}
 		for origin := range rules {
-			if origin == "local" || origin == "imported" || strings.HasPrefix(origin, "imported:") {
+			if consultedOrigin(origin) {
 				continue
 			}
 			unknown = append(unknown, activation+"."+origin)

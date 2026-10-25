@@ -859,12 +859,20 @@ func harnessTable() []Harness { //nolint:funlen // one entry per supported harne
 			}},
 		},
 		{
-			Name: "deja", Load: LoadNotes, Files: func() []string { return []string{NotesFile()} },
+			// deja's own notes, and the entries committed in the .deja/ of
+			// the repositories deja has been run in. A repo file is read
+			// whole: a merge or a deleted line rewrites it.
+			Name: "deja", Load: func() []model.Session { return append(LoadNotes(), LoadRepoMemory()...) },
+			Files: func() []string { return append([]string{NotesFile()}, RepoMemoryFiles()...) },
 			Kinds: []FileKind{{
 				Name:      "deja",
 				Match:     func(p string) bool { return p == NotesFile() },
 				Parse:     fullParse(ParseNotesFile),
 				ParseFrom: offsetParse(ParseNotesFileFromOffset),
+			}, {
+				Name:  "deja-repo",
+				Match: IsRepoMemoryFile,
+				Parse: fullParse(ParseRepoMemoryFile),
 			}},
 		},
 	}
