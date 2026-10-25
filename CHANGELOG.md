@@ -31,6 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Amp threads the plugin writes are filed under the workspace Amp has open,
+  not `amp/plugins`. The plugin took `process.cwd()` for the thread's
+  directory, and Amp runs a plugin from `~/.config/amp/plugins`, so every
+  thread and every hook it sent named that directory. It now reads
+  `amp.system.workspaceRoot`. Run `deja install amp-auto` again to rewrite the
+  plugin; threads already written are corrected the next time they end a
+  turn (#5672).
 - opencode shows the per-prompt line. The plugins kept only the model's half
   of the reply, so the line reached nobody while deja counted it shown and
   held the next one back twenty minutes. opencode 1.x and Kilo now toast it.
