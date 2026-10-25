@@ -166,7 +166,7 @@ for (const name of ["agent.start", "agent.end"]) {
 				t.Fatal(rerr)
 			}
 			hooks := 0
-			for _, line := range strings.Split(strings.TrimSpace(string(raw)), "\n") {
+			for line := range strings.SplitSeq(strings.TrimSpace(string(raw)), "\n") {
 				var p struct {
 					Cwd string `json:"cwd"`
 				}
