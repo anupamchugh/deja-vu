@@ -3,11 +3,10 @@ package sources
 import (
 	"bufio"
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"io"
 	"os"
 	"path/filepath"
@@ -73,10 +72,12 @@ type RepoEntry struct {
 var ErrRepoMemoryMalformed = errors.New("repo memory has a line deja cannot read")
 
 // RepoEntryID is the id an entry gets: the kind and the text with case and
-// spacing folded, hashed.
+// spacing folded, hashed. FNV, not a cryptographic hash: the id only has to
+// tell a few hundred entries apart and stay the same on every machine.
 func RepoEntryID(kind, text string) string {
-	sum := sha256.Sum256([]byte(kind + "\x00" + strings.ToLower(strings.Join(strings.Fields(text), " "))))
-	return hex.EncodeToString(sum[:5])
+	h := fnv.New64a()
+	_, _ = h.Write([]byte(kind + "\x00" + strings.ToLower(strings.Join(strings.Fields(text), " "))))
+	return fmt.Sprintf("%010x", h.Sum64()>>24)
 }
 
 // CleanRepoText folds an entry to the one line it is stored as: control and

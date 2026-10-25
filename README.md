@@ -175,8 +175,8 @@ few things your agents learned the hard way, put them in the repository:
 
 ```text
 $ deja repo candidates
-ca3be2e5da rejected Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.  (session s1, claude 2026-08-03)
-$ deja repo add ca3be2e5da
+4cd7e7bb9c rejected Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.  (session s1, claude 2026-08-03)
+$ deja repo add 4cd7e7bb9c
 added 1 entry to .deja/memory.jsonl
 nothing is committed: review with `git diff .deja/` and commit it like code
 ```

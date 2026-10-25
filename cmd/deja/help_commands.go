@@ -200,7 +200,7 @@ var helpEntries = []helpEntry{
 		},
 		desc:     "project memory committed in the repository's .deja/",
 		more:     "Entries in .deja/memory.jsonl reach everyone who clones the repository, in recall and at session start. candidates proposes entries from this project's history and writes nothing. add writes the ones you pick, redacted, and never commits: review the diff and commit it. Deleting a line removes an entry.",
-		examples: []string{"deja repo candidates --since 90d", "deja repo add 9c41e0a2b7", `deja repo add --kind rejected "retry with jitter broke idempotency in the webhook sender"`}},
+		examples: []string{"deja repo candidates --since 90d", "deja repo add 4cd7e7bb9c", `deja repo add --kind rejected "retry with jitter broke idempotency in the webhook sender"`}},
 
 	{name: "install", group: groupSetup,
 		usage:    []string{"deja install <target>... | --all | --auto [--no-guidance] [--no-index] [--force]"},

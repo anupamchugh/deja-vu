@@ -157,11 +157,11 @@
 <h2>Picking entries</h2>
 <pre>$ deja repo candidates
 2 candidates for webhooks, newest first. nothing is written until you pick
-ca3be2e5da rejected Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.  (session s1, claude 2026-08-03)
-bd327dbaab decision Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id. We decided to keep one delivery id per event and let the outbox table own retries.  (session s1, claude 2026-08-03)
+4cd7e7bb9c rejected Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.  (session s1, claude 2026-08-03)
+c5ea828bb3 decision Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id. We decided to keep one delivery id per event and let the outbox table own retries.  (session s1, claude 2026-08-03)
 add the ones that hold for everyone: deja repo add &lt;id&gt; [&lt;id&gt;...]
 
-$ deja repo add ca3be2e5da
+$ deja repo add 4cd7e7bb9c
 added 1 entry to .deja/memory.jsonl
 wrote .deja/.gitattributes so parallel additions merge line by line, and a short .deja/README.md for whoever opens the folder
 nothing is committed: review with `git diff .deja/` and commit it like code</pre>
@@ -170,7 +170,7 @@ nothing is committed: review with `git diff .deja/` and commit it like code</pre
 <p>An agent can write one too, through the MCP <code>remember</code> mode with the project set to <code>repo:</code>, <code>repo:rejected</code> or <code>repo:gotcha</code>. Its skill tells it to do that only when you ask. Either way the file changes in your working tree and nothing else happens: you read the diff and commit it with the code it explains.</p>
 
 <h2>What is in the file</h2>
-<pre>{"id":"ca3be2e5da","kind":"rejected","text":"Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.","date":"2026-10-25","from":"claude 2026-08-03"}</pre>
+<pre>{"id":"4cd7e7bb9c","kind":"rejected","text":"Reverted the retry with jitter: it broke idempotency because the sender re-signs each attempt with a new delivery id.","date":"2026-10-25","from":"claude 2026-08-03"}</pre>
 <p>One JSON line per entry. <code>kind</code> is <code>decision</code>, <code>rejected</code> or <code>gotcha</code>. <code>from</code> is the agent and the day of the session it came from. No path, no session id, no machine or user name goes in. Before an entry is written it goes through the secret rules deja applies everywhere and then the pass <code>deja share</code> uses for home paths, email addresses, internal host names and private IP addresses. If the result still matches a secret rule, or redaction is turned off with <code>DEJA_NO_REDACT=1</code>, the entry is refused. Pattern redaction is a floor, so read the diff.</p>
 <p>Entries are capped at 600 characters, and deja reads at most 500 of them or 1 MB from a file.</p>
 <p>When deja creates <code>.deja/</code> it also writes a four-line <code>README.md</code> there, saying what the folder is and how a teammate uses it, for someone who finds it while browsing the repository. It is written that one time only: edit it or delete it and deja leaves it that way. The same goes for <code>.gitattributes</code>.</p>
