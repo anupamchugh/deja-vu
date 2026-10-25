@@ -53,6 +53,13 @@
     <summary>Hermes searches its own sessions and keeps MEMORY.md. deja adds the other forty-two agents: a plugin on pre_llm_call, the MCP tools, and a skill.</summary>
   </entry>
   <entry>
+    <title>Where Amp stores its history — session format</title>
+    <id>https://vshulcz.github.io/deja-vu/registry/amp.html</id>
+    <link rel="alternate" type="text/html" href="https://vshulcz.github.io/deja-vu/registry/amp.html"></link>
+    <updated>2026-10-25T00:00:00Z</updated>
+    <summary>Where Amp writes its conversation history on disk, what the files contain, the quirks deja found in them, and when the format was last verified against a real store.</summary>
+  </entry>
+  <entry>
     <title>Where Cursor stores its history — session format</title>
     <id>https://vshulcz.github.io/deja-vu/registry/cursor.html</id>
     <link rel="alternate" type="text/html" href="https://vshulcz.github.io/deja-vu/registry/cursor.html"></link>
@@ -282,12 +289,5 @@
     <link rel="alternate" type="text/html" href="https://vshulcz.github.io/deja-vu/registry/openclaw.html"></link>
     <updated>2026-10-19T00:00:00Z</updated>
     <summary>Where OpenClaw writes its conversation history on disk, what the files contain, the quirks deja found in them, and when the format was last verified against a real store.</summary>
-  </entry>
-  <entry>
-    <title>Where Copilot CLI stores its history — session format</title>
-    <id>https://vshulcz.github.io/deja-vu/registry/copilot.html</id>
-    <link rel="alternate" type="text/html" href="https://vshulcz.github.io/deja-vu/registry/copilot.html"></link>
-    <updated>2026-10-18T00:00:00Z</updated>
-    <summary>Where Copilot CLI writes its conversation history on disk, what the files contain, the quirks deja found in them, and when the format was last verified against a real store.</summary>
   </entry>
 </feed>
